@@ -6,6 +6,8 @@ var logger = require('morgan');
 
 var expressLayouts = require('express-ejs-layouts');
 
+const systemConfig = require('./configs/system')
+
 // var indexRouter = require('./routes/index');
 // var ItemsRouter = require('./routes/items');
 
@@ -23,7 +25,13 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use('/admin', require('./routes/backend/index'));
+
+
+//Local variable
+app.locals.systemConfig = systemConfig;
+
+//Setup Router
+app.use(`/${systemConfig.prefixAdmin}`, require('./routes/backend/index'));
 app.use('/', require('./routes/frontend/index'));
 // app.use('/admin/dashboard', require('./routes/backend/dashboard'));
 // app.use('/admin/items', require('./routes/backend/items'));
