@@ -5,8 +5,22 @@ var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
 var expressLayouts = require('express-ejs-layouts');
+const mongoose = require('mongoose');
+
 
 const systemConfig = require('./configs/system')
+
+mongoose.connect('mongodb+srv://oliverthangtruong:cvrnjjPt96sKnj16@nodejs.9fbzhbv.mongodb.net/?retryWrites=true&w=majority');
+
+var db = mongoose.connection;
+
+db.on('error', () => {
+  console.log("Connection Error by THANG-TRUONG");
+});
+
+db.once('open', () => {
+  console.log("Connection Connected Successfully !");
+})
 
 // var indexRouter = require('./routes/index');
 // var ItemsRouter = require('./routes/items');
