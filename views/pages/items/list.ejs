@@ -16,23 +16,9 @@
       <div class="panel-body">
         <div class="row">
           <div class="status-list col-sm-6 pl0">
-            <a class="btn m-b-sm btn-success btn-sm" href="admin123/item/all">
-              ALL (4)
-            </a>
-
-            <a
-              class="btn m-b-sm btn-default btn-sm"
-              href="admin123/item/active"
-            >
-              ACTIVE (4)
-            </a>
-
-            <a
-              class="btn m-b-sm btn-default btn-sm"
-              href="admin123/item/inactive"
-            >
-              INACTIVE (0)
-            </a>
+            <!-- FilterStatus -->
+            <% include ./../../helpers/filter-status %> <%
+            FilterStatusHelper(statusFilter) %>
           </div>
           <div class="col-sm-6">
             <form action="admin123/item/all" method="GET">
@@ -172,7 +158,10 @@
 
       <div class="panel-body">
         <div class="infor-pagination">
-          <p>Number of elements on the page: <span>0</span></p>
+          <p>
+            Number of elements on the page:
+            <span> <td><%= items.length %></td></span>
+          </p>
 
           <p>
             Showing <span> 0 </span> to <span>0</span> of <span>0</span> entries

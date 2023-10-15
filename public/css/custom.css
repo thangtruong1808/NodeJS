@@ -1,4 +1,3 @@
-
 div.zcontrols {
     margin-bottom: 20px;
 }
@@ -43,9 +42,4 @@ li.active > a:first-child{
 
 img.error-page-img {
     width: 800px;
-}
-
-img.error-page-img{
-    width: 100%;
-    align-items: center;
 }
