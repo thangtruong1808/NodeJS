@@ -6,83 +6,73 @@ var logger = require('morgan');
 
 var expressLayouts = require('express-ejs-layouts');
 const mongoose = require('mongoose');
-
+const { MongoClient } = require("mongodb");
 
 const systemConfig = require('./configs/system')
+const ItemsModel = require('./schemas/items');
 
-
-
-
-
-main().catch(err => console.log("Connection to Database Error ! ! ! "));
-
-async function main() {
-  await mongoose.connect('mongodb+srv://oliverthangtruong:cvrnjjPt96sKnj16@nodejs.9fbzhbv.mongodb.net/NodeJSDB');
-  // use `await mongoose.connect('mongodb://user:password@127.0.0.1:27017/test');` if your database has auth enabled
-
-  //  const itemSchema = new mongoose.Schema({
-  //   name: String
-  //  });
+// async function run() {
+//   const uri =
+//     "mongodb+srv://oliverthangtruong:cvrnjjPt96sKnj16@nodejs.9fbzhbv.mongodb.net/NodeJSDB";
   
-  const kittySchema = new mongoose.Schema({
-    name: String
-  });
+//   const client = new MongoClient(uri);
+  
+//   try {
+//     await client.connect();
 
-    // NOTE: methods must be added to the schema before compiling it with mongoose.model()
-  kittySchema.methods.speak = function speak() {
-    const greeting = this.name
-      ? 'Meow name is ' + this.name
-      : 'I don\'t have a name';
-    console.log(greeting);
-  };
-  // const myItem = mongoose.model('Item', itemSchema);
-  const Kitten = mongoose.model('Kitten', kittySchema);
+//     console.log("Database Connected Successfully ")
 
-  // const thangtruong = new myItem({ name: 'THANG-TRUONG' });
-  const fluffy = new Kitten({ name: 'fluffy' });
-  fluffy.speak();
+//     const db = client.db("NodeJSDB");
+//     const coll = db.collection("Items");
 
-  // await thangtruong.save();
-  await fluffy.save();  
-   fluffy.speak();
-  // const myResult = await myItem.find();
-  // const myResult2 = await Kitten.find();
-  // // console.log(myResult);
-  // console.log(myResult2);
-}
+//     // find code goes here
+//     const cursor = coll.find();
+//     // iterate code goes here
+//     await cursor.forEach(console.log);
+//     // console.log(cursor)
+    
+//   } catch (e) {
+//         console.error(e);
+//   }
+//   finally {
+//     // Ensures that the client will close when you finish/error
+//     await client.close();
+//   }
+// }
+// run().catch(console.dir);
 
+mongoose.connect('mongodb+srv://oliverthangtruong:cvrnjjPt96sKnj16@nodejs.9fbzhbv.mongodb.net/NodeJSDB');
 
-// mongoose.connect('mongodb+srv://oliverthangtruong:cvrnjjPt96sKnj16@nodejs.9fbzhbv.mongodb.net/?retryWrites=true&w=majority');
+var db = mongoose.connection;
 
-// var db = mongoose.connection;
+db.on('error', () => {
+  console.log("Connection to Database Error ! ! ! " + err)
+});
+db.once('open', () => {
+  console.log("Database Connected Successfully ")
+});
 
-// db.on('error', () => {
-//   console.log("Connection Error by THANG-TRUONG");
+// ItemsModel.find({}, function(err, items) {
+//   console.log(items)
+//   console.log(err)
 // });
 
-// db.once('open', () => {
-//   console.log("Connection Connected Successfully !");
-// })
 
-// const kittySchema = new mongoose.Schema({
-//   name: String
+// Using callbacks
+// ItemsModel.find({}, function (err, items) {
+//   console.log(items)
+//   console.log(err)
 // });
 
-// kittySchema.methods.speak = function speak() {
-//   const greeting = this.name
-//     ? 'Meow name is ' + this.name
-//     : 'I don\'t have a name';
-//   console.log(greeting);
-// };
-
-// const Kitten = mongoose.model('Kitten', kittySchema);
-
-// const silence = new Kitten({ name: 'Silence' });
-// // console.log(silence.name); // 'Silence
-// // silence.save(function (err, silence) {
-// //   if (err) return console.log("Error 2");
-
-
+ItemsModel.find({}, function (err, items) {
+    if (err){
+      console.log('err', err);
+    }
+    if (!items){
+        console.log('No data in the collection');
+   }
+      console.log('items : ', items);
+})
 
 
 // var indexRouter = require('./routes/index');

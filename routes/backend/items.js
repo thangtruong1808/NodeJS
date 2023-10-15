@@ -1,8 +1,10 @@
 var express = require('express');
 var router = express.Router();
 
+// const ItemsModel = require('/project-nodejs/schemas/items');
 /* GET item-list. */
-router.get('/', function(req, res, next) {
+router.get('/', function (req, res, next) {
+    
     res.render('pages/items/list.ejs',
         {pageTitle: 'Welcome to List Page', title: "List Page" });
 });
