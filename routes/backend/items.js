@@ -3,14 +3,18 @@ var router = express.Router();
 
 const ItemsModel = require("./../../schemas/items");
 const UtilsHelpers = require("./../../helpers/utils");
+const ParamHelpers = require("./../../helpers/params");
 
-// const ItemsModel = require('/project-nodejs/schemas/items');
 /* GET item-list. */
-router.get("/", (req, res, next) => {
-  const statusFilter = UtilsHelpers.createFilterStatus();
+router.get("(/:status)?", (req, res, next) => {
+  let objWhere = {};
+  let currentStatus = ParamHelpers.getParam(req.params, "status", "all");
 
-  ItemsModel.find({}).then((items) => {
-    //   console.log("items : ", items);
+  let statusFilter = UtilsHelpers.createFilterStatus(currentStatus);
+
+  if (currentStatus !== "all") objWhere = { status: currentStatus };
+
+  ItemsModel.find(objWhere).then((items) => {
     res.render("pages/items/list", {
       pageTitle: "Welcome to List Page",
       title: "List Page",
