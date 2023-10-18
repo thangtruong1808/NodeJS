@@ -18,8 +18,6 @@ let createFilterStatus = (currentStatus) => {
     if (item.value === currentStatus) statusFilter[index].class = "success";
 
     ItemsModel.count(condition).then((data) => {
-      console.log("data: " + data);
-      console.log("ItemsModel.status: " + ItemsModel.status);
       statusFilter[index].count = data;
     });
   });

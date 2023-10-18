@@ -8,11 +8,16 @@ const ParamHelpers = require("./../../helpers/params");
 /* GET item-list. */
 router.get("(/:status)?", (req, res, next) => {
   let objWhere = {};
-  let currentStatus = ParamHelpers.getParam(req.params, "status", "all");
 
+  let keyword = ParamHelpers.getParam(req.query, "keyword", "");
+  let currentStatus = ParamHelpers.getParam(req.params, "status", "all");
   let statusFilter = UtilsHelpers.createFilterStatus(currentStatus);
 
-  if (currentStatus !== "all") objWhere = { status: currentStatus };
+  if (currentStatus === "all") {
+    if (keyword !== "") objWhere = { name: new RegExp(keyword, "i") };
+  } else {
+    objWhere = { status: currentStatus, name: new RegExp(keyword, "i") };
+  }
 
   ItemsModel.find(objWhere).then((items) => {
     res.render("pages/items/list", {
@@ -20,6 +25,8 @@ router.get("(/:status)?", (req, res, next) => {
       title: "List Page",
       items: items,
       statusFilter: statusFilter,
+      currentStatus,
+      keyword,
     });
   });
 });
