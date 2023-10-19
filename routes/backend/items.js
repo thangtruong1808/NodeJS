@@ -19,16 +19,18 @@ router.get("(/:status)?", (req, res, next) => {
     objWhere = { status: currentStatus, name: new RegExp(keyword, "i") };
   }
 
-  ItemsModel.find(objWhere).then((items) => {
-    res.render("pages/items/list", {
-      pageTitle: "Welcome to List Page",
-      title: "List Page",
-      items: items,
-      statusFilter: statusFilter,
-      currentStatus,
-      keyword,
+  ItemsModel.find(objWhere)
+    .sort({ name: "asc" })
+    .then((items) => {
+      res.render("pages/items/list", {
+        pageTitle: "Welcome to List Page",
+        title: "List Page",
+        items: items,
+        statusFilter: statusFilter,
+        currentStatus,
+        keyword,
+      });
     });
-  });
 });
 
 /* Add an Item. */
