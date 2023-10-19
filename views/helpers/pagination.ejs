@@ -1,9 +1,11 @@
-<% paginationHelper=()=> {
+<% paginationHelper=(pagination)=> {
     return `<div class="panel panel-info" id="pagination">
         <div class="panel-heading">
             Pagination 12345
-            <span class="label label-warning">Total pages: 0</span>
-            <span class="label label-danger">Total entries: 0</span>
+            <span class="label label-warning">
+                Total pages: ${Math.ceil(pagination.totalItems/pagination.totalItemsPerPage)}</span>
+            <span class="label label-danger">
+                Total entries: ${pagination.totalItems}</span>
         </div>
         <div class="panel-body">
             <div class="infor-pagination">

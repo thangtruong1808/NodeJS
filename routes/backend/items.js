@@ -12,6 +12,14 @@ router.get("(/:status)?", (req, res, next) => {
   let keyword = ParamHelpers.getParam(req.query, "keyword", "");
   let currentStatus = ParamHelpers.getParam(req.params, "status", "all");
   let statusFilter = UtilsHelpers.createFilterStatus(currentStatus);
+  let pagination = {
+    totalItems: 1,
+    totalItemsPerPage: 4,
+    currentPage: 1,
+  };
+  pagination.currentPage = parseInt(
+    ParamHelpers.getParam(req.query, "page", "1")
+  );
 
   if (currentStatus === "all") {
     if (keyword !== "") objWhere = { name: new RegExp(keyword, "i") };
@@ -19,14 +27,21 @@ router.get("(/:status)?", (req, res, next) => {
     objWhere = { status: currentStatus, name: new RegExp(keyword, "i") };
   }
 
+  ItemsModel.countDocuments(objWhere).then((data) => {
+    pagination.totalItems = data;
+  });
+
   ItemsModel.find(objWhere)
     .sort({ name: "asc" })
+    .skip((pagination.currentPage - 1) * pagination.totalItemsPerPage)
+    .limit(pagination.totalItemsPerPage)
     .then((items) => {
       res.render("pages/items/list", {
         pageTitle: "Welcome to List Page",
         title: "List Page",
         items: items,
         statusFilter: statusFilter,
+        pagination,
         currentStatus,
         keyword,
       });
