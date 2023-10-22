@@ -1,22 +1,35 @@
 <% paginationHelper=(pagination)=> {
+
+    let totalItems = pagination.totalItems;
+    let totalItemsPerPage = pagination.totalItemsPerPage;
+    let totalPages = Math.ceil(totalItems/totalItemsPerPage);
+    let currentPage = pagination.currentPage;
+
+    let toItem = (totalItemsPerPage * currentPage);
+    let fromItem = toItem - totalItemsPerPage + 1;
+
+    if(toItem > totalItems) {
+    toItem = totalItems;
+    }
     return `<div class="panel panel-info" id="pagination">
         <div class="panel-heading">
             Pagination 12345
             <span class="label label-warning">
-                Total pages: ${Math.ceil(pagination.totalItems/pagination.totalItemsPerPage)}</span>
+                Total pages: ${totalPages}</span>
             <span class="label label-danger">
-                Total entries: ${pagination.totalItems}</span>
+                Total entries: ${totalItems}</span>
         </div>
         <div class="panel-body">
             <div class="infor-pagination">
-                <p>Number of elements on the page:
+                <p>Number of entries on the page:
                     <span>
                         <td>
-                            0
+                            ${totalItemsPerPage}
                         </td>
                     </span>
                 </p>
-                <p>Showing <span> 0 </span> to <span>0</span> of <span>0</span> entries</p>
+                <p>Showing <span> ${fromItem} </span> to <span>${toItem}</span> of <span>${totalItems}</span> entries
+                </p>
             </div>
             <div class="ad-pagination">
                 <ul class="pagination text-center">
