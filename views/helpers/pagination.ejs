@@ -1,10 +1,10 @@
-<% paginationHelper=(pagination)=> {
+<% paginationHelper=(paginationObj, type, currentStatus, keyword)=> {
 
-    let totalItems = pagination.totalItems;
-    let totalItemsPerPage = pagination.totalItemsPerPage;
+    let totalItems = paginationObj.totalItems;
+    let totalItemsPerPage = paginationObj.totalItemsPerPage;
     let totalPages = Math.ceil(totalItems/totalItemsPerPage);
-    let currentPage = pagination.currentPage;
-    let pageRanges = pagination.pageRanges;
+    let currentPage = paginationObj.currentPage;
+    let pageRanges = paginationObj.pageRanges;
     let xhtmlPagination = '';
     let toItem = (totalItemsPerPage * currentPage);
     let fromItem = toItem - totalItemsPerPage + 1;
@@ -16,16 +16,18 @@
     if(totalPages > 1){
 
     let xhtmlStart= '', xhtmlPrevious= '', xhtmlNext= '', xhtmlPages= '', xhtmlEnd = '';
-    let link = systemConfig.prefixAdmin + '/items/';
+    let link = systemConfig.prefixAdmin + '/' + type + '/'+ currentStatus;
+    if(keyword != '') link += '?keyword=' + keyword + '&page=';
+    else link += '?page=';
 
     if(currentPage > 1) {
-    xhtmlStart = `<li> <a href="${link}?page=1">Start</a> </li>`;
-    xhtmlPrevious = `<li> <a href="${link}?page=${currentPage-1}">Previous</a> </li>`;
+    xhtmlStart = `<li> <a href="${link}1">Start</a> </li>`;
+    xhtmlPrevious = `<li> <a href="${link}${currentPage-1}">Previous</a> </li>`;
     }
 
 
-    if(currentPage < totalPages) { xhtmlEnd=`<li> <a href="${link}?page=${totalPages}">End</a> </li>`;
-        xhtmlNext = `<li> <a href="${link}?page=${currentPage+1}">Next</a> </li>`;
+    if(currentPage < totalPages) { xhtmlEnd=`<li> <a href="${link}${totalPages}">End</a> </li>`;
+        xhtmlNext = `<li> <a href="${link}${currentPage+1}">Next</a> </li>`;
 
         }
         let middle = Math.ceil(pageRanges/2);
@@ -38,10 +40,10 @@
             }
 
             for(let i=min; i <=max; i++) { if(i==currentPage){ xhtmlPages+=`<li class="active"><a
-                    href="${link}?page=${i}">${i}</a></li>`;
+                    href="${link}${i}">${i}</a></li>`;
                 }
                 else {
-                xhtmlPages+=`<li><a href="${link}?page=${i}">${i}</a></li>`;
+                xhtmlPages+=`<li><a href="${link}${i}">${i}</a></li>`;
                 }
 
                 }
