@@ -16,7 +16,7 @@ router.get("(/:status)?", (req, res, next) => {
     totalItems: 1,
     totalItemsPerPage: 1,
     currentPage: 1,
-    pageRanges: 4,
+    pageRanges: 5,
   };
   pagination.currentPage = parseInt(
     ParamHelpers.getParam(req.query, "page", "1")
