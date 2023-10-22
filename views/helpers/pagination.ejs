@@ -5,6 +5,7 @@
     let totalPages = Math.ceil(totalItems/totalItemsPerPage);
     let currentPage = pagination.currentPage;
     let pageRanges = pagination.pageRanges;
+    let xhtmlPagination = '';
     let toItem = (totalItemsPerPage * currentPage);
     let fromItem = toItem - totalItemsPerPage + 1;
 
@@ -12,7 +13,9 @@
     toItem = totalItems;
     }
 
-    let xhtmlPagination= '', xhtmlStart= '', xhtmlPrevious= '', xhtmlNext= '', xhtmlPages= '', xhtmlEnd = '';
+    if(totalPages > 1){
+
+    let xhtmlStart= '', xhtmlPrevious= '', xhtmlNext= '', xhtmlPages= '', xhtmlEnd = '';
     let link = systemConfig.prefixAdmin + '/items/';
 
     if(currentPage > 1) {
@@ -29,9 +32,9 @@
         let min = currentPage - middle + 1;
         let max = min + pageRanges - 1;
 
-        if(min<=1) { min=1; max=pageRanges } if(max>= totalPages){
+        if(min <= 1) { min=1; max=pageRanges } if(max>= totalPages){
             max = totalPages;
-            min = max - pageRanges + 1;
+            min = ((max - pageRanges + 1) >= 1) ? (max - pageRanges + 1) : 1;
             }
 
             for(let i=min; i <=max; i++) { if(i==currentPage){ xhtmlPages+=`<li class="active"><a
@@ -44,7 +47,10 @@
                 }
                 xhtmlPagination='<ul class="pagination text-center">' + xhtmlStart + xhtmlPrevious + xhtmlPages +
                     xhtmlNext
-                    + xhtmlEnd + '</ul>' ; return `<div class="panel panel-info" id="pagination">
+                    + xhtmlEnd + '</ul>' ;
+                }
+
+                return `<div class="panel panel-info" id="pagination">
                     <div class="panel-heading">
                         Pagination
                         <span class="label label-warning">
