@@ -14,8 +14,9 @@ router.get("(/:status)?", (req, res, next) => {
   let statusFilter = UtilsHelpers.createFilterStatus(currentStatus);
   let pagination = {
     totalItems: 1,
-    totalItemsPerPage: 2,
+    totalItemsPerPage: 1,
     currentPage: 1,
+    pageRanges: 4,
   };
   pagination.currentPage = parseInt(
     ParamHelpers.getParam(req.query, "page", "1")
@@ -29,23 +30,22 @@ router.get("(/:status)?", (req, res, next) => {
 
   ItemsModel.countDocuments(objWhere).then((data) => {
     pagination.totalItems = data;
-  });
-
-  ItemsModel.find(objWhere)
-    .sort({ name: "asc" })
-    .skip((pagination.currentPage - 1) * pagination.totalItemsPerPage)
-    .limit(pagination.totalItemsPerPage)
-    .then((items) => {
-      res.render("pages/items/list", {
-        pageTitle: "Welcome to List Page",
-        title: "List Page",
-        items: items,
-        statusFilter: statusFilter,
-        pagination,
-        currentStatus,
-        keyword,
+    ItemsModel.find(objWhere)
+      .sort({ name: "asc" })
+      .skip((pagination.currentPage - 1) * pagination.totalItemsPerPage)
+      .limit(pagination.totalItemsPerPage)
+      .then((items) => {
+        res.render("pages/items/list", {
+          pageTitle: "Welcome to List Page",
+          title: "List Page",
+          items: items,
+          statusFilter: statusFilter,
+          pagination,
+          currentStatus,
+          keyword,
+        });
       });
-    });
+  });
 });
 
 /* Add an Item. */

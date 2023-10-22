@@ -11,44 +11,60 @@
     if(toItem > totalItems) {
     toItem = totalItems;
     }
-    return `<div class="panel panel-info" id="pagination">
-        <div class="panel-heading">
-            Pagination 12345
-            <span class="label label-warning">
-                Total pages: ${totalPages}</span>
-            <span class="label label-danger">
-                Total entries: ${totalItems}</span>
-        </div>
-        <div class="panel-body">
-            <div class="infor-pagination">
-                <p>Number of entries on the page:
-                    <span>
-                        <td>
-                            ${totalItemsPerPage}
-                        </td>
-                    </span>
-                </p>
-                <p>Showing <span> ${fromItem} </span> to <span>${toItem}</span> of <span>${totalItems}</span> entries
-                </p>
-            </div>
-            <div class="ad-pagination">
-                <ul class="pagination text-center">
-                    <li class="disabled">
-                        <a>First</a>
-                        <a>Previous</a>
-                    </li>
-                    <li><a href="admin123/item/page=1">1</a></li>
-                    <li class="active"><a>2</a></li>
-                    <li><a href="admin123/item/page=3">3</a></li>
-                    <li><a href="admin123/item/page=4">4</a></li>
-                    <li><a href="admin123/item/page=5">5</a></li>
-                    <li>
-                        <a href="admin123/item/page=0">Next</a>
-                        <a href="admin123/item/page=0">End</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>`;
+
+    let xhtmlPagination= '', xhtmlStart= '', xhtmlPrevious= '', xhtmlNext= '', xhtmlPages= '', xhtmlEnd = '';
+    let link = systemConfig.prefixAdmin + '/items/';
+
+    if(currentPage > 1) {
+    xhtmlStart = `<li> <a href="${link}?page=1">Start</a> </li>`;
+    xhtmlPrevious = `<li> <a href="${link}?page=${currentPage-1}">Previous</a> </li>`;
     }
-    %>
+
+
+    if(currentPage < totalPages) { xhtmlEnd=`<li> <a href="${link}?page=${totalPages}">End</a> </li>`;
+        xhtmlNext = `<li> <a href="${link}?page=${currentPage+1}">Next</a> </li>`;
+
+        }
+
+        for(let i = 1; i <= totalPages; i++) { if(i==currentPage){ xhtmlPages+=`<li class="active"><a
+                href="${link}?page=${i}">${i}</a></li>`;
+            }
+            else {
+            xhtmlPages+=`<li><a href="${link}?page=${i}">${i}</a></li>`;
+            }
+
+            }
+            xhtmlPagination='<ul class="pagination text-center">' + xhtmlStart + xhtmlPrevious + xhtmlPages + xhtmlNext
+                + xhtmlEnd + '</ul>' ; return `<div class="panel panel-info" id="pagination">
+                <div class="panel-heading">
+                    Pagination
+                    <span class="label label-warning">
+                        Total pages: ${totalPages}</span>
+                    <span class="label label-danger">
+                        Total entries: ${totalItems}</span>
+                </div>
+                <div class="panel-body">
+                    <div class="infor-pagination">
+                        <p>Number of entries on the page:
+                            <span>
+                                <td>
+                                    ${totalItemsPerPage}
+                                </td>
+                            </span>
+                        </p>
+                        <p>Showing <span> ${fromItem} </span> to <span>${toItem}</span> of <span>${totalItems}</span>
+                            entries
+                        </p>
+                    </div>
+                    <div class="ad-pagination">
+
+                        <!-- Start button -->
+
+                        ${xhtmlPagination}
+
+
+                    </div>
+                </div>
+            </div>`;
+            }
+            %>
