@@ -75,10 +75,32 @@ router.get("/change-status/:id/:status", (req, res, next) => {
   );
 });
 
+// Change Multiple Status
+router.post("/change-status/:status", (req, res, next) => {
+  let currentStatus = ParamHelpers.getParam(req.params, "status", "active");
+
+  ItemsModel.updateMany(
+    { _id: { $in: req.body.cid } },
+    { status: currentStatus },
+    (err, data) => {
+      res.redirect(linkIndex);
+    }
+  );
+});
+
 // Delete Item
 router.get("/delete/:id/", (req, res, next) => {
   let id = ParamHelpers.getParam(req.params, "id", "");
   ItemsModel.findOneAndDelete({ _id: id }, (err, data) => {
+    res.redirect(linkIndex);
+  });
+});
+
+// Delete Multiple Items
+router.post("/delete", (req, res, next) => {
+  // let currentStatus = ParamHelpers.getParam(req.params, "status", "active");
+
+  ItemsModel.deleteMany({ _id: { $in: req.body.cid } }, (err, data) => {
     res.redirect(linkIndex);
   });
 });

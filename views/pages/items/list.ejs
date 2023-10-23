@@ -64,14 +64,14 @@
           <div class="zcontrols">
             <select name="action" class="form-control slbAction">
               <option value="">Bulk Action</option>
-              <option value="admin123/item/change-status/active">Active</option>
-              <option value="admin123/item/change-status/inactive">
+              <option value="<%= systemConfig.prefixAdmin %>/items/change-status/active">Active</option>
+              <option value="<%= systemConfig.prefixAdmin %>/items/change-status/inactive">
                 InActive
               </option>
-              <option value="admin123/item/save-ordering/">
+              <option value="<%= systemConfig.prefixAdmin %>/items/save-ordering/">
                 Change Ordering
               </option>
-              <option value="admin123/item/delete/">Delete</option>
+              <option value="<%= systemConfig.prefixAdmin %>/items/delete/">Delete</option>
             </select>
             <button class="btn btn-info btnAction" type="button" id="btn-action" value="btnAction" disabled>
               Apply
@@ -103,7 +103,7 @@
                   <% items.forEach((item, index)=> { %>
                     <tr>
                       <td>
-                        <input type="checkbox" name="cid" value="5af7d6d506b3d71a08df04b2" />
+                        <input type="checkbox" name="cid" value="<%= item.id %>" />
                       </td>
                       <td>
                         <%= index+1 %>
