@@ -5,6 +5,7 @@ const ItemsModel = require("./../../schemas/items");
 const UtilsHelpers = require("./../../helpers/utils");
 const ParamHelpers = require("./../../helpers/params");
 const systemConfig = require("./../../configs/system");
+const linkIndex = "/" + systemConfig.prefixAdmin + "/items/";
 
 /* GET item-list. */
 router.get("(/:status)?", (req, res, next) => {
@@ -15,7 +16,7 @@ router.get("(/:status)?", (req, res, next) => {
   let statusFilter = UtilsHelpers.createFilterStatus(currentStatus);
   let paginationObj = {
     totalItems: 1,
-    totalItemsPerPage: 8,
+    totalItemsPerPage: 5,
     currentPage: parseInt(ParamHelpers.getParam(req.query, "page", "1")),
     pageRanges: 5,
   };
@@ -69,10 +70,19 @@ router.get("/change-status/:id/:status", (req, res, next) => {
     //   runValidators: true,
     // },
     (err, data) => {
-      res.redirect(`/${systemConfig.prefixAdmin}/items`);
+      res.redirect(linkIndex);
     }
   );
 });
+
+// Delete Item
+router.get("/delete/:id/", (req, res, next) => {
+  let id = ParamHelpers.getParam(req.params, "id", "");
+  ItemsModel.findOneAndDelete({ _id: id }, (err, data) => {
+    res.redirect(linkIndex);
+  });
+});
+
 /* Add an Item. */
 router.get("/add", function (req, res, next) {
   res.render("pages/items/add.ejs", {
