@@ -4,6 +4,7 @@ var router = express.Router();
 const ItemsModel = require("./../../schemas/items");
 const UtilsHelpers = require("./../../helpers/utils");
 const ParamHelpers = require("./../../helpers/params");
+const systemConfig = require("./../../configs/system");
 
 /* GET item-list. */
 router.get("(/:status)?", (req, res, next) => {
@@ -15,12 +16,9 @@ router.get("(/:status)?", (req, res, next) => {
   let paginationObj = {
     totalItems: 1,
     totalItemsPerPage: 8,
-    currentPage: 1,
+    currentPage: parseInt(ParamHelpers.getParam(req.query, "page", "1")),
     pageRanges: 5,
   };
-  paginationObj.currentPage = parseInt(
-    ParamHelpers.getParam(req.query, "page", "1")
-  );
 
   if (currentStatus === "all") {
     if (keyword !== "") objWhere = { name: new RegExp(keyword, "i") };
@@ -48,6 +46,33 @@ router.get("(/:status)?", (req, res, next) => {
   });
 });
 
+// Change Status
+router.get("/change-status/:id/:status", (req, res, next) => {
+  let currentStatus = ParamHelpers.getParam(req.params, "status", "active");
+  let id = ParamHelpers.getParam(req.params, "id", "");
+
+  let status = currentStatus === "active" ? "inactive" : "active";
+
+  // ItemsModel.findById(id).then((itemResult) => {
+  //   itemResult.status = status;
+  //   itemResult.save().then((result) => {
+  //     res.redirect("/admin/items");
+  //   });
+  // });
+
+  ItemsModel.findByIdAndUpdate(
+    { _id: id },
+    { status: status },
+    // {
+    //   new: true,
+    //   upsert: true,
+    //   runValidators: true,
+    // },
+    (err, data) => {
+      res.redirect(`/${systemConfig.prefixAdmin}/items`);
+    }
+  );
+});
 /* Add an Item. */
 router.get("/add", function (req, res, next) {
   res.render("pages/items/add.ejs", {

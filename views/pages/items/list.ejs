@@ -107,12 +107,13 @@
                       </td>
                       <td>
                         <%= index+1 %>
+                          <!-- <%= item.id %> -->
                       </td>
                       <td>
                         <%= item.name %>
                       </td>
                       <td>
-                        <%- statusHelper(item.status, "#" ) %>
+                        <%- statusHelper('items', item.status, item.id ) %>
                       </td>
                       <td>
                         <input type="number" value="<%= item.ordering %>" class="text-center" />
