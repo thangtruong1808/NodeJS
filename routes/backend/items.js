@@ -10,13 +10,12 @@ const linkIndex = "/" + systemConfig.prefixAdmin + "/items/";
 /* GET item-list. */
 router.get("(/:status)?", (req, res, next) => {
   let objWhere = {};
-
   let keyword = ParamHelpers.getParam(req.query, "keyword", "");
   let currentStatus = ParamHelpers.getParam(req.params, "status", "all");
   let statusFilter = UtilsHelpers.createFilterStatus(currentStatus);
   let paginationObj = {
     totalItems: 1,
-    totalItemsPerPage: 5,
+    totalItemsPerPage: 4,
     currentPage: parseInt(ParamHelpers.getParam(req.query, "page", "1")),
     pageRanges: 5,
   };
@@ -61,18 +60,32 @@ router.get("/change-status/:id/:status", (req, res, next) => {
   //   });
   // });
 
-  ItemsModel.findByIdAndUpdate(
-    { _id: id },
-    { status: status },
-    // {
-    //   new: true,
-    //   upsert: true,
-    //   runValidators: true,
-    // },
-    (err, data) => {
-      res.redirect(linkIndex);
-    }
-  );
+  ItemsModel.findByIdAndUpdate({ _id: id }, { status: status }, (err, data) => {
+    res.redirect(linkIndex);
+  });
+});
+
+// Change ordering - Multi
+router.post("/change-ordering", (req, res, next) => {
+  let icds = req.body.cid;
+  let orderings = req.body.ordering;
+
+  if (Array.isArray(icds)) {
+    icds.forEach((item, index) => {
+      ItemsModel.updateOne(
+        { _id: item },
+        { ordering: parseInt(orderings[index]) },
+        (err, data) => {}
+      );
+    });
+  } else {
+    ItemsModel.updateOne(
+      { _id: icds },
+      { ordering: parseInt(orderings) },
+      (err, data) => {}
+    );
+  }
+  res.redirect(linkIndex);
 });
 
 // Change Multiple Status
