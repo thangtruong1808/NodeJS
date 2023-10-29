@@ -101,10 +101,11 @@
                                 <input type="number" value="<%= item.ordering %>" class="text-center ordering" />
                               </td>
                               <td>
-                                <%= item.date.toDateString() %>
+                                <%= item.date.toLocaleDateString() %>
                               </td>
                               <td>
-                                <a href="#" type="button" class="btn btn-warning btn-sm">Edit</a>
+                                <a href="<%= systemConfig.prefixAdmin %>/items/form/<%= item.id %>" type="button"
+                                  class="btn btn-warning btn-sm">Edit</a>
                                 <a href="<%= systemConfig.prefixAdmin %>/items/delete/<%= item.id %>" type="button"
                                   class="btn btn-danger btn-sm btn-delete">Delete</a>
                               </td>

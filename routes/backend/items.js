@@ -7,6 +7,10 @@ const ParamHelpers = require("./../../helpers/params");
 const systemConfig = require("./../../configs/system");
 const linkIndex = "/" + systemConfig.prefixAdmin + "/items/";
 
+const pageTitleIndex = "Item Management";
+const pageTitleAdd = pageTitleIndex + " - ADD";
+const pageTitleEdit = pageTitleIndex + " - EDIT";
+
 /* GET item-list. */
 router.get("(/status/:status)?", (req, res, next) => {
   let objWhere = {};
@@ -36,7 +40,7 @@ router.get("(/status/:status)?", (req, res, next) => {
       .limit(paginationObj.totalItemsPerPage)
       .then((items) => {
         res.render("pages/items/list", {
-          pageTitle: "Welcome to List Page",
+          pageTitle: pageTitleIndex,
           title: "List Page",
           items: items,
           statusFilter: statusFilter,
@@ -137,13 +141,36 @@ router.post("/delete", (req, res, next) => {
 });
 
 /* Add an Item. */
-router.get("/add", function (req, res, next) {
-  req.flash("success", "You are here . . .");
-  res.end();
-  // res.render("pages/items/add.ejs", {
-  //   pageTitle: "Welcome to Add Item Page",
-  //   title: "Add Item Page",
-  // });
+router.get("/form(/:id)?", function (req, res, next) {
+  let id = ParamHelpers.getParam(req.params, "id", "");
+  let item = {
+    name: "",
+    ordering: 0,
+    status: "novalue",
+    date: "",
+  };
+
+  if (id === "") {
+    //Add new Item
+    res.render("pages/items/form", {
+      pageTitle: pageTitleAdd,
+      title: "Add Item Page",
+      item,
+    });
+  } else {
+    //Edit Item
+    ItemsModel.findById({ _id: id }, (err, item) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.render("pages/items/form", {
+          pageTitle: pageTitleEdit,
+          title: "Edit Item Page",
+          item,
+        });
+      }
+    });
+  }
 });
 
 module.exports = router;
