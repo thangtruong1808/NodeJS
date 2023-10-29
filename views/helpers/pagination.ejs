@@ -16,7 +16,7 @@
     if(totalPages > 1){
 
     let xhtmlStart= '', xhtmlPrevious= '', xhtmlNext= '', xhtmlPages= '', xhtmlEnd = '';
-    let link = systemConfig.prefixAdmin + '/' + type + '/'+ currentStatus;
+    let link = systemConfig.prefixAdmin + '/' + type + '/status/'+ currentStatus;
     if(keyword != '') link += '?keyword=' + keyword + '&page=';
     else link += '?page=';
 
@@ -39,8 +39,7 @@
             min = ((max - pageRanges + 1) >= 1) ? (max - pageRanges + 1) : 1;
             }
 
-            for(let i=min; i <=max; i++) { if(i==currentPage){ xhtmlPages+=`<li class="active"><a
-                    href="${link}${i}">${i}</a></li>`;
+            for(let i=min; i <=max; i++) { if(i==currentPage){ xhtmlPages+=`<li class="active"><a>${i}</a></li>`;
                 }
                 else {
                 xhtmlPages+=`<li><a href="${link}${i}">${i}</a></li>`;

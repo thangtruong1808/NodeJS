@@ -4,9 +4,10 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 
+const flash = require("express-flash-notification");
+const session = require("express-session");
 var expressLayouts = require("express-ejs-layouts");
 const mongoose = require("mongoose");
-// const { MongoClient } = require("mongodb");
 
 const systemConfig = require("./configs/system");
 
@@ -27,6 +28,19 @@ db.once("open", () => {
 // var ItemsRouter = require('./routes/items');
 
 var app = express();
+app.use(cookieParser());
+app.use(
+  session({
+    secret: "thang-truong",
+    resave: false,
+    saveUninitialized: true,
+  })
+);
+app.use(
+  flash(app, {
+    viewName: "elements/notify",
+  })
+);
 
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
@@ -37,7 +51,7 @@ app.set("layout", "backend");
 // app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+
 app.use(express.static(path.join(__dirname, "public")));
 
 //Local variable

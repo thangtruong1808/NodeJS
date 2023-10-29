@@ -8,15 +8,15 @@ const systemConfig = require("./../../configs/system");
 const linkIndex = "/" + systemConfig.prefixAdmin + "/items/";
 
 /* GET item-list. */
-router.get("(/:status)?", (req, res, next) => {
+router.get("(/status/:status)?", (req, res, next) => {
   let objWhere = {};
   let keyword = ParamHelpers.getParam(req.query, "keyword", "");
   let currentStatus = ParamHelpers.getParam(req.params, "status", "all");
   let statusFilter = UtilsHelpers.createFilterStatus(currentStatus);
   let paginationObj = {
     totalItems: 1,
-    totalItemsPerPage: 4,
-    currentPage: parseInt(ParamHelpers.getParam(req.query, "page", "1")),
+    totalItemsPerPage: 2,
+    currentPage: parseInt(ParamHelpers.getParam(req.query, "page", 1)),
     pageRanges: 5,
   };
 
@@ -25,6 +25,8 @@ router.get("(/:status)?", (req, res, next) => {
   } else {
     objWhere = { status: currentStatus, name: new RegExp(keyword, "i") };
   }
+  // if (currentStatus !== "all") objWhere.status = currentStatus;
+  // if (keyword !== "") objWhere.name = new RegExp(keyword, "i");
 
   ItemsModel.countDocuments(objWhere).then((data) => {
     paginationObj.totalItems = data;
@@ -61,6 +63,7 @@ router.get("/change-status/:id/:status", (req, res, next) => {
   // });
 
   ItemsModel.findByIdAndUpdate({ _id: id }, { status: status }, (err, data) => {
+    req.flash("success", data.name + " has been updated Successfully.", false);
     res.redirect(linkIndex);
   });
 });
@@ -85,6 +88,11 @@ router.post("/change-ordering", (req, res, next) => {
       (err, data) => {}
     );
   }
+  req.flash(
+    "success",
+    " Items have been updated orderings successfully.",
+    false
+  );
   res.redirect(linkIndex);
 });
 
@@ -96,15 +104,21 @@ router.post("/change-status/:status", (req, res, next) => {
     { _id: { $in: req.body.cid } },
     { status: currentStatus },
     (err, data) => {
+      req.flash(
+        "success",
+        data.n + " Items have been updated successfully.",
+        false
+      );
       res.redirect(linkIndex);
     }
   );
 });
 
-// Delete Item
+// Delete an Item
 router.get("/delete/:id/", (req, res, next) => {
   let id = ParamHelpers.getParam(req.params, "id", "");
   ItemsModel.findOneAndDelete({ _id: id }, (err, data) => {
+    req.flash("success", data.name + " has been deleted successfully.", false);
     res.redirect(linkIndex);
   });
 });
@@ -112,18 +126,24 @@ router.get("/delete/:id/", (req, res, next) => {
 // Delete Multiple Items
 router.post("/delete", (req, res, next) => {
   // let currentStatus = ParamHelpers.getParam(req.params, "status", "active");
-
   ItemsModel.deleteMany({ _id: { $in: req.body.cid } }, (err, data) => {
+    req.flash(
+      "success",
+      data.n + "Items have been deleted successfully.",
+      false
+    );
     res.redirect(linkIndex);
   });
 });
 
 /* Add an Item. */
 router.get("/add", function (req, res, next) {
-  res.render("pages/items/add.ejs", {
-    pageTitle: "Welcome to Add Item Page",
-    title: "Add Item Page",
-  });
+  req.flash("success", "You are here . . .");
+  res.end();
+  // res.render("pages/items/add.ejs", {
+  //   pageTitle: "Welcome to Add Item Page",
+  //   title: "Add Item Page",
+  // });
 });
 
 module.exports = router;
