@@ -4,8 +4,9 @@ var path = require("path");
 var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 
-const flash = require("express-flash-notification");
+const validator = require("express-validator");
 const session = require("express-session");
+const flash = require("express-flash-notification");
 var expressLayouts = require("express-ejs-layouts");
 const mongoose = require("mongoose");
 
@@ -42,6 +43,19 @@ app.use(
   })
 );
 
+app.use(
+  validator({
+    customValidators: {
+      isNotEqual: (value1, value2) => {
+        return value1 !== value2;
+      },
+      isValidDate: (value) => {
+        if (!value.match(/^\d{2}-\d{2}-\d{4}$/)) return false;
+      },
+    },
+  })
+);
+
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
@@ -51,7 +65,6 @@ app.set("layout", "backend");
 // app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
 app.use(express.static(path.join(__dirname, "public")));
 
 //Local variable

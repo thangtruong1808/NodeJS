@@ -2,6 +2,7 @@ var express = require("express");
 var router = express.Router();
 
 const ItemsModel = require("./../../schemas/items");
+const ValidateItems = require("./../../validates/items");
 const UtilsHelpers = require("./../../helpers/utils");
 const ParamHelpers = require("./../../helpers/params");
 const systemConfig = require("./../../configs/system");
@@ -143,16 +144,28 @@ router.post("/delete", (req, res, next) => {
 // Save and Edit an Item
 router.post("/save", (req, res, next) => {
   req.body = JSON.parse(JSON.stringify(req.body));
-  let myItem = {
-    name: ParamHelpers.getParam(req.body, "name", ""),
-    ordering: ParamHelpers.getParam(req.body, "ordering", 0),
-    status: ParamHelpers.getParam(req.body, "status", "active"),
-    date: ParamHelpers.getParam(req.body, "date", new Date()),
-  };
-  new ItemsModel(myItem).save().then(() => {
-    req.flash("success", "Item has been saved successfully.", false);
-    res.redirect(linkIndex);
-  });
+  ValidateItems.validator(req);
+  let item = Object.assign(req.body);
+  let errors = req.validationErrors();
+  if (errors) {
+    res.render("pages/items/form", {
+      pageTitle: pageTitleAdd,
+      title: pageTitleAdd,
+      item,
+      errors,
+    });
+  } else {
+    // let myItem = {
+    //   name: ParamHelpers.getParam(req.body, "name", ""),
+    //   ordering: ParamHelpers.getParam(req.body, "ordering", 0),
+    //   status: ParamHelpers.getParam(req.body, "status", "active"),
+    //   date: ParamHelpers.getParam(req.body, "date", new Date()),
+    // };
+    new ItemsModel(item).save().then(() => {
+      req.flash("success", "Item has been saved successfully.", false);
+      res.redirect(linkIndex);
+    });
+  }
 });
 
 /* Display form. */
@@ -164,6 +177,7 @@ router.get("/form(/:id)?", function (req, res, next) {
     status: "novalue",
     date: "",
   };
+  let errors = null;
 
   if (id === "") {
     //Add new Item
@@ -171,6 +185,7 @@ router.get("/form(/:id)?", function (req, res, next) {
       pageTitle: pageTitleAdd,
       title: "Add Item Page",
       item,
+      errors,
     });
   } else {
     //Edit Item
@@ -182,6 +197,7 @@ router.get("/form(/:id)?", function (req, res, next) {
           pageTitle: pageTitleEdit,
           title: "Edit Item Page",
           item,
+          errors,
         });
       }
     });
