@@ -1,22 +1,41 @@
+const util = require("util");
+const notify = require("./../configs/notify");
+
+const options = {
+  name: { min: 6, max: 20 },
+  ordering: { min: 0, max: 100 },
+  status: { value: "novalue" },
+  date: { value: "yyyy-mm-dd" },
+};
+
 module.exports = {
   validator: (req) => {
     // NAME
     req
-      .checkBody("name", "Name must be more than 5 and less than 20 characters")
-      .isLength({ min: 5, max: 20 });
+      .checkBody(
+        "name",
+        util.format(notify.ERROR_NAME, options.name.min, options.name.max)
+      )
+      .isLength({ min: options.name.min, max: options.name.max });
 
     // ORDERING
     req
       .checkBody(
         "ordering",
-        "ordering must be greater than 0 and less than 100"
+        util.format(
+          notify.ERROR_ORDERING,
+          options.ordering.min,
+          options.ordering.max
+        )
       )
       .isInt({ gt: 0, lt: 100 });
 
     // STATUS
-    req.checkBody("status", "please select a status").isNotEqual("novalue");
+    req
+      .checkBody("status", notify.ERROR_STATUS)
+      .isNotEqual(options.status.value);
 
     // DATE
-    req.checkBody("date", "date must be a valid date").isISO8601("yyyy-mm-dd");
+    req.checkBody("date", notify.ERROR_DATE).isISO8601(options.date.value);
   },
 };

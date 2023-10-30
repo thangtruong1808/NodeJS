@@ -1,12 +1,15 @@
 var express = require("express");
 var router = express.Router();
+const util = require("util");
 
 const ItemsModel = require("./../../schemas/items");
 const ValidateItems = require("./../../validates/items");
 const UtilsHelpers = require("./../../helpers/utils");
 const ParamHelpers = require("./../../helpers/params");
 const systemConfig = require("./../../configs/system");
+const notify = require("./../../configs/notify");
 const e = require("connect-flash");
+const { count } = require("console");
 const linkIndex = "/" + systemConfig.prefixAdmin + "/items/";
 
 const pageTitleIndex = "Item Management";
@@ -69,9 +72,27 @@ router.get("/change-status/:id/:status", (req, res, next) => {
   // });
 
   ItemsModel.findByIdAndUpdate({ _id: id }, { status: status }, (err, data) => {
-    req.flash("success", data.name + " has been updated Successfully.", false);
+    req.flash("success", notify.notify.CHANGED_STATUS_SUCCESS, false);
     res.redirect(linkIndex);
   });
+});
+
+// Change Multiple Status
+router.post("/change-status/:status", (req, res, next) => {
+  let currentStatus = ParamHelpers.getParam(req.params, "status", "active");
+
+  ItemsModel.updateMany(
+    { _id: { $in: req.body.cid } },
+    { status: currentStatus },
+    (err, data) => {
+      req.flash(
+        "success",
+        util.format(notify.notify.CHANGED_MULTI_STATUS_SUCCESS, data.n),
+        false
+      );
+      res.redirect(linkIndex);
+    }
+  );
 });
 
 // Change ordering - Multi
@@ -96,35 +117,17 @@ router.post("/change-ordering", (req, res, next) => {
   }
   req.flash(
     "success",
-    " Items have been updated orderings successfully.",
+    util.format(notify.notify.CHANGE_ORDERING_SUCCESS, icds.length),
     false
   );
   res.redirect(linkIndex);
-});
-
-// Change Multiple Status
-router.post("/change-status/:status", (req, res, next) => {
-  let currentStatus = ParamHelpers.getParam(req.params, "status", "active");
-
-  ItemsModel.updateMany(
-    { _id: { $in: req.body.cid } },
-    { status: currentStatus },
-    (err, data) => {
-      req.flash(
-        "success",
-        data.n + " Items have been updated successfully.",
-        false
-      );
-      res.redirect(linkIndex);
-    }
-  );
 });
 
 // Delete an Item
 router.get("/delete/:id/", (req, res, next) => {
   let id = ParamHelpers.getParam(req.params, "id", "");
   ItemsModel.findOneAndDelete({ _id: id }, (err, data) => {
-    req.flash("success", data.name + " has been deleted successfully.", false);
+    req.flash("success", notify.notify.DELETE_SUCCESS, false);
     res.redirect(linkIndex);
   });
 });
@@ -135,7 +138,7 @@ router.post("/delete", (req, res, next) => {
   ItemsModel.deleteMany({ _id: { $in: req.body.cid } }, (err, data) => {
     req.flash(
       "success",
-      data.n + "Items have been deleted successfully.",
+      util.format(notify.notify.DELETE_MULTI_SUCCESS, data.n),
       false
     );
     res.redirect(linkIndex);
@@ -161,8 +164,6 @@ router.post("/save", (req, res, next) => {
         errors,
       });
     } else {
-      console.log("No errors");
-      console.log("item.id= " + item.id);
       ItemsModel.updateOne(
         { _id: item.id },
         {
@@ -175,11 +176,7 @@ router.post("/save", (req, res, next) => {
           if (err) {
             console.log(err);
           }
-          req.flash(
-            "success",
-            " Updated has been updated Successfully.",
-            false
-          );
+          req.flash("success", notify.notify.EDIT_SUCCESS, false);
           res.redirect(linkIndex);
         }
       );
@@ -201,7 +198,7 @@ router.post("/save", (req, res, next) => {
       //   date: ParamHelpers.getParam(req.body, "date", new Date()),
       // };
       new ItemsModel(item).save().then(() => {
-        req.flash("success", "Item has been saved successfully.", false);
+        req.flash("success", notify.notify.ADD_SUCCESS, false);
         res.redirect(linkIndex);
       });
     }
