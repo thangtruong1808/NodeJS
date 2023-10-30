@@ -19,7 +19,7 @@ router.get("(/status/:status)?", (req, res, next) => {
   let statusFilter = UtilsHelpers.createFilterStatus(currentStatus);
   let paginationObj = {
     totalItems: 1,
-    totalItemsPerPage: 2,
+    totalItemsPerPage: 4,
     currentPage: parseInt(ParamHelpers.getParam(req.query, "page", 1)),
     pageRanges: 5,
   };
@@ -140,7 +140,22 @@ router.post("/delete", (req, res, next) => {
   });
 });
 
-/* Add an Item. */
+// Save and Edit an Item
+router.post("/save", (req, res, next) => {
+  req.body = JSON.parse(JSON.stringify(req.body));
+  let myItem = {
+    name: ParamHelpers.getParam(req.body, "name", ""),
+    ordering: ParamHelpers.getParam(req.body, "ordering", 0),
+    status: ParamHelpers.getParam(req.body, "status", "active"),
+    date: ParamHelpers.getParam(req.body, "date", new Date()),
+  };
+  new ItemsModel(myItem).save().then(() => {
+    req.flash("success", "Item has been saved successfully.", false);
+    res.redirect(linkIndex);
+  });
+});
+
+/* Display form. */
 router.get("/form(/:id)?", function (req, res, next) {
   let id = ParamHelpers.getParam(req.params, "id", "");
   let item = {
