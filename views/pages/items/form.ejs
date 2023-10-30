@@ -9,6 +9,9 @@
         <div class="panel-body">
           <% include ./../../elements/errors %>
             <div class="row">
+              <h3>
+                <%= item %>
+              </h3>
               <div class="col-lg-6">
                 <form role="form" action="<%= systemConfig.prefixAdmin %>/items/save" method="POST">
                   <div class="form-group">
@@ -33,7 +36,7 @@
                     <label>Date</label>
                     <input class="form-control" type="date" name="date" value="<%= mydate %>" />
                   </div>
-                  <input class="form-control" name="id" value="" type="hidden" />
+                  <input class="form-control" name="id" value="<%= item.id %>" type="hidden" />
                   <button type="submit" class="btn btn-primary">Submit</button>
                   <a type="button" href="/<%= systemConfig.prefixAdmin %>/items" class="btn btn-default">Cancel</a>
                 </form>

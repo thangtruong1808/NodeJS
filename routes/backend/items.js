@@ -6,6 +6,7 @@ const ValidateItems = require("./../../validates/items");
 const UtilsHelpers = require("./../../helpers/utils");
 const ParamHelpers = require("./../../helpers/params");
 const systemConfig = require("./../../configs/system");
+const e = require("connect-flash");
 const linkIndex = "/" + systemConfig.prefixAdmin + "/items/";
 
 const pageTitleIndex = "Item Management";
@@ -20,7 +21,7 @@ router.get("(/status/:status)?", (req, res, next) => {
   let statusFilter = UtilsHelpers.createFilterStatus(currentStatus);
   let paginationObj = {
     totalItems: 1,
-    totalItemsPerPage: 4,
+    totalItemsPerPage: 10,
     currentPage: parseInt(ParamHelpers.getParam(req.query, "page", 1)),
     pageRanges: 5,
   };
@@ -146,25 +147,64 @@ router.post("/save", (req, res, next) => {
   req.body = JSON.parse(JSON.stringify(req.body));
   ValidateItems.validator(req);
   let item = Object.assign(req.body);
+  console.log("item: " + item);
+
   let errors = req.validationErrors();
-  if (errors) {
-    res.render("pages/items/form", {
-      pageTitle: pageTitleAdd,
-      title: pageTitleAdd,
-      item,
-      errors,
-    });
+
+  if (typeof item !== "undefined" && item.id != "") {
+    //edit
+    if (errors) {
+      res.render("pages/items/form", {
+        pageTitle: pageTitleAdd,
+        title: pageTitleEdit,
+        item,
+        errors,
+      });
+    } else {
+      console.log("No errors");
+      console.log("item.id= " + item.id);
+      ItemsModel.updateOne(
+        { _id: item.id },
+        {
+          name: item.name,
+          ordering: parseInt(item.ordering),
+          status: item.status,
+          date: item.date,
+        },
+        (err, result) => {
+          if (err) {
+            console.log(err);
+          }
+          req.flash(
+            "success",
+            " Updated has been updated Successfully.",
+            false
+          );
+          res.redirect(linkIndex);
+        }
+      );
+    }
   } else {
-    // let myItem = {
-    //   name: ParamHelpers.getParam(req.body, "name", ""),
-    //   ordering: ParamHelpers.getParam(req.body, "ordering", 0),
-    //   status: ParamHelpers.getParam(req.body, "status", "active"),
-    //   date: ParamHelpers.getParam(req.body, "date", new Date()),
-    // };
-    new ItemsModel(item).save().then(() => {
-      req.flash("success", "Item has been saved successfully.", false);
-      res.redirect(linkIndex);
-    });
+    //add
+    if (errors) {
+      res.render("pages/items/form", {
+        pageTitle: pageTitleAdd,
+        title: pageTitleAdd,
+        item,
+        errors,
+      });
+    } else {
+      // let myItem = {
+      //   name: ParamHelpers.getParam(req.body, "name", ""),
+      //   ordering: ParamHelpers.getParam(req.body, "ordering", 0),
+      //   status: ParamHelpers.getParam(req.body, "status", "active"),
+      //   date: ParamHelpers.getParam(req.body, "date", new Date()),
+      // };
+      new ItemsModel(item).save().then(() => {
+        req.flash("success", "Item has been saved successfully.", false);
+        res.redirect(linkIndex);
+      });
+    }
   }
 });
 
