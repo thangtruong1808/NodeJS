@@ -1,0 +1,126 @@
+<!-- <h3><%= JSON.stringify(statusFilter) %></h3> -->
+<!-- <h3><%= keyword %></h3> -->
+<% include ./../../helpers/filter-status %>
+  <% include ./../../helpers/pagination %>
+    <% include ./../../helpers/status %>
+      <% include ./../../helpers/action %>
+        <% const collection="items" ; const linkPrefix=systemConfig.prefixAdmin + `/${collection}/` %>
+
+          <h3>
+            <%- locals.flash %>
+          </h3>
+
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="panel panel-info">
+                <div class="panel-heading">
+                  Search & Filter
+                  <a href="<%= linkPrefix %>status/all">
+                    <span id="icon-reload" class="glyphicon glyphicon-refresh"></span>
+                  </a>
+                </div>
+
+                <div class="panel-body">
+                  <div class="row">
+                    <div class="status-list col-sm-6 pl0">
+                      <!-- FilterStatus -->
+                      <%- FilterStatusHelper(collection, statusFilter, keyword) %>
+                    </div>
+
+                    <!-- Search Form -->
+                    <div class="col-sm-6">
+                      <form action="<%= linkPrefix %>status/<%= currentStatus %>" method="GET">
+                        <div class="input-group">
+                          <input type="text" class="form-control" name="keyword" placeholder="Search for..."
+                            value="<%= keyword %>" />
+                          <input type="hidden" value="all" />
+                          <span class="input-group-btn">
+                            <button class="btn btn-info" type="submit">Search</button>
+                          </span>
+                          <span class="input-group-btn">
+                            <a class="btn btn-success" type="button"
+                              href="<%= linkPrefix %>status/<%= currentStatus %>">
+                              Clear
+                            </a>
+                          </span>
+                        </div>
+                      </form>
+                    </div>
+                    <!-- End Search Form -->
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-12">
+              <div class="panel panel-info">
+                <div class="panel-heading">
+                  List Items: <span>
+                    <%= items.length %>
+                  </span>
+
+                </div>
+                <!-- /.panel-heading -->
+                <div class="panel-body">
+                  <form role="form" class="form-inline zt-form" id="zt-form" action="" method="post">
+
+                    <!-- FilterStatus -->
+                    <%- actionHelper(collection) %>
+                      <div class="table-responsive">
+                        <table class="table table-striped">
+                          <thead>
+                            <tr>
+                              <th>
+                                <input type="checkbox" class="cbAll" />
+                              </th>
+                              <th>#</th>
+                              <th>Name</th>
+                              <th>Status</th>
+                              <!-- <th width="30%">Content</th> -->
+                              <th>Ordering</th>
+                              <th>Date</th>
+                              <th>Action</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <% items.forEach((item, index)=> { %>
+                              <tr>
+                                <td>
+                                  <input type="checkbox" name="cid" value="<%= item.id %>" />
+                                </td>
+                                <td>
+                                  <%= index+1 %>
+                                    <!-- <%= item.id %> -->
+                                </td>
+                                <td>
+                                  <%= item.name %>
+                                </td>
+                                <td>
+                                  <%- statusHelper(collection, item.status, item.id ) %>
+                                </td>
+                                <td>
+                                  <input type="number" value="<%= item.ordering %>" class="text-center ordering" />
+                                </td>
+                                <td>
+                                  <%= item.date.toLocaleDateString() %>
+                                </td>
+                                <td>
+                                  <a href="<%= linkPrefix %>form/<%= item.id %>" type="button"
+                                    class="btn btn-warning btn-sm">Edit</a>
+                                  <a href="<%= linkPrefix %>delete/<%= item.id %>" type="button"
+                                    class="btn btn-danger btn-sm btn-delete">Delete</a>
+                                </td>
+                              </tr>
+                              <% }) %>
+                          </tbody>
+                        </table>
+                      </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-lg-12">
+              <%- paginationHelper(paginationObj, collection , currentStatus, keyword) %>
+            </div>
+          </div>

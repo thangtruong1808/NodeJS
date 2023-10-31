@@ -2,19 +2,21 @@ var express = require("express");
 var router = express.Router();
 const util = require("util");
 
-const ItemsModel = require("./../../schemas/items");
-const ValidateItems = require("./../../validates/items");
-const UtilsHelpers = require("./../../helpers/utils");
-const ParamHelpers = require("./../../helpers/params");
-const systemConfig = require("./../../configs/system");
-const notify = require("./../../configs/notify");
+const systemConfig = require(__path_configs + "system");
+const notify = require(__path_configs + "notify");
+
+const ItemsModel = require(__path_schemas + "items");
+const ValidateItems = require(__path_validates + "items");
+const UtilsHelpers = require(__path_helpers + "utils");
+const ParamHelpers = require(__path_helpers + "params");
+
 const e = require("connect-flash");
-const { count } = require("console");
 const linkIndex = "/" + systemConfig.prefixAdmin + "/items/";
 
 const pageTitleIndex = "Item Management";
 const pageTitleAdd = pageTitleIndex + " - ADD";
 const pageTitleEdit = pageTitleIndex + " - EDIT";
+const folderView = __path_views + "pages/items/";
 
 /* GET item-list. */
 router.get("(/status/:status)?", (req, res, next) => {
@@ -44,7 +46,7 @@ router.get("(/status/:status)?", (req, res, next) => {
       .skip((paginationObj.currentPage - 1) * paginationObj.totalItemsPerPage)
       .limit(paginationObj.totalItemsPerPage)
       .then((items) => {
-        res.render("pages/items/list", {
+        res.render(`${folderView}list`, {
           pageTitle: pageTitleIndex,
           title: "List Page",
           items: items,
@@ -157,7 +159,7 @@ router.post("/save", (req, res, next) => {
   if (typeof item !== "undefined" && item.id != "") {
     //edit
     if (errors) {
-      res.render("pages/items/form", {
+      res.render(`${folderView}form`, {
         pageTitle: pageTitleAdd,
         title: pageTitleEdit,
         item,
@@ -184,7 +186,7 @@ router.post("/save", (req, res, next) => {
   } else {
     //add
     if (errors) {
-      res.render("pages/items/form", {
+      res.render(`${folderView}form`, {
         pageTitle: pageTitleAdd,
         title: pageTitleAdd,
         item,
@@ -218,7 +220,7 @@ router.get("/form(/:id)?", function (req, res, next) {
 
   if (id === "") {
     //Add new Item
-    res.render("pages/items/form", {
+    res.render(`${folderView}form`, {
       pageTitle: pageTitleAdd,
       title: "Add Item Page",
       item,
@@ -230,7 +232,7 @@ router.get("/form(/:id)?", function (req, res, next) {
       if (err) {
         console.log(err);
       } else {
-        res.render("pages/items/form", {
+        res.render(`${folderView}form`, {
           pageTitle: pageTitleEdit,
           title: "Edit Item Page",
           item,

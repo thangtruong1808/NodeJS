@@ -10,14 +10,26 @@ const flash = require("express-flash-notification");
 var expressLayouts = require("express-ejs-layouts");
 const mongoose = require("mongoose");
 
-const systemConfig = require("./configs/system");
+//Define Path
+global.__base = __dirname + "/";
+global.__path_app = __base + "App/";
+global.__path_configs = __path_app + "configs/";
+global.__path_helpers = __path_app + "helpers/";
+global.__path_routes = __path_app + "routes/";
+global.__path_schemas = __path_app + "schemas/";
+global.__path_validates = __path_app + "validates/";
+global.__path_views = __path_app + "views/";
+
+console.log("__path_configs: " + __path_configs);
+
+const systemConfig = require(__path_configs + "system");
+const databaseConfig = require(__path_configs + "database");
 
 mongoose.connect(
-  "mongodb+srv://oliverthangtruong:cvrnjjPt96sKnj16@nodejs.9fbzhbv.mongodb.net/NodeJSDB"
+  `mongodb+srv://${databaseConfig.username}:${databaseConfig.password}@nodejs.9fbzhbv.mongodb.net/${databaseConfig.database}`
 );
 
 var db = mongoose.connection;
-
 db.on("error", () => {
   console.log("Connection to Database Error ! ! ! " + err);
 });
@@ -39,7 +51,7 @@ app.use(
 );
 app.use(
   flash(app, {
-    viewName: "elements/notify",
+    viewName: __path_views + "elements/notify",
   })
 );
 
@@ -60,7 +72,7 @@ app.use(
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "ejs");
 app.use(expressLayouts);
-app.set("layout", "backend");
+app.set("layout", __path_views + "backend");
 
 // app.use(logger("dev"));
 app.use(express.json());
@@ -71,8 +83,11 @@ app.use(express.static(path.join(__dirname, "public")));
 app.locals.systemConfig = systemConfig;
 
 //Setup Router
-app.use(`/${systemConfig.prefixAdmin}`, require("./routes/backend/index"));
-app.use("/", require("./routes/frontend/index"));
+app.use(
+  `/${systemConfig.prefixAdmin}`,
+  require(__path_routes + "backend/index")
+);
+app.use("/", require(__path_routes + "frontend/index"));
 // app.use('/admin/dashboard', require('./routes/backend/dashboard'));
 // app.use('/admin/items', require('./routes/backend/items'));
 
@@ -89,7 +104,7 @@ app.use(function (err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render("pages/error", {
+  res.render(__path_views + "pages/error", {
     pageTitle: "Page Not Found !",
     title: "Error Page",
   });

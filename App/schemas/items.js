@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const databaseConfig = require(__path_configs + "database");
 
 var schema = new mongoose.Schema({
   name: String,
@@ -7,4 +8,4 @@ var schema = new mongoose.Schema({
   date: Date,
 });
 
-module.exports = mongoose.model("items", schema);
+module.exports = mongoose.model(databaseConfig.col_items, schema);

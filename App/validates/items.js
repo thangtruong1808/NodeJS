@@ -1,5 +1,5 @@
 const util = require("util");
-const notify = require("./../configs/notify");
+const notify = require(__path_configs + "notify");
 
 const options = {
   name: { min: 6, max: 20 },
