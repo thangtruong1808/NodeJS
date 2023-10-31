@@ -19,44 +19,46 @@ const pageTitleEdit = pageTitleIndex + " - EDIT";
 const folderView = __path_views + "pages/items/";
 
 /* GET item-list. */
-router.get("(/status/:status)?", (req, res, next) => {
+router.get("(/status/:status)?", async (req, res, next) => {
   let objWhere = {};
   let keyword = ParamHelpers.getParam(req.query, "keyword", "");
   let currentStatus = ParamHelpers.getParam(req.params, "status", "all");
-  let statusFilter = UtilsHelpers.createFilterStatus(currentStatus);
+  let statusFilter = await UtilsHelpers.createFilterStatus(currentStatus);
   let paginationObj = {
     totalItems: 1,
-    totalItemsPerPage: 10,
+    totalItemsPerPage: 5,
     currentPage: parseInt(ParamHelpers.getParam(req.query, "page", 1)),
     pageRanges: 5,
   };
 
-  if (currentStatus === "all") {
-    if (keyword !== "") objWhere = { name: new RegExp(keyword, "i") };
-  } else {
-    objWhere = { status: currentStatus, name: new RegExp(keyword, "i") };
-  }
-  // if (currentStatus !== "all") objWhere.status = currentStatus;
-  // if (keyword !== "") objWhere.name = new RegExp(keyword, "i");
+  // if (currentStatus === "all") {
+  //   if (keyword !== "") objWhere = { name: new RegExp(keyword, "i") };
+  // } else {
+  //   objWhere = { status: currentStatus, name: new RegExp(keyword, "i") };
+  // }
 
-  ItemsModel.countDocuments(objWhere).then((data) => {
+  if (currentStatus !== "all") objWhere.status = currentStatus;
+  if (keyword !== "") objWhere.name = new RegExp(keyword, "i");
+
+  await ItemsModel.countDocuments(objWhere).then((data) => {
     paginationObj.totalItems = data;
-    ItemsModel.find(objWhere)
-      .sort({ name: "asc" })
-      .skip((paginationObj.currentPage - 1) * paginationObj.totalItemsPerPage)
-      .limit(paginationObj.totalItemsPerPage)
-      .then((items) => {
-        res.render(`${folderView}list`, {
-          pageTitle: pageTitleIndex,
-          title: "List Page",
-          items: items,
-          statusFilter: statusFilter,
-          paginationObj,
-          currentStatus,
-          keyword,
-        });
-      });
   });
+
+  ItemsModel.find(objWhere)
+    .sort({ name: "asc" })
+    .skip((paginationObj.currentPage - 1) * paginationObj.totalItemsPerPage)
+    .limit(paginationObj.totalItemsPerPage)
+    .then((items) => {
+      res.render(`${folderView}list`, {
+        pageTitle: pageTitleIndex,
+        title: "List Page",
+        items: items,
+        statusFilter: statusFilter,
+        paginationObj,
+        currentStatus,
+        keyword,
+      });
+    });
 });
 
 // Change Status

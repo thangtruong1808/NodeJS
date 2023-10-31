@@ -10,15 +10,17 @@ const flash = require("express-flash-notification");
 var expressLayouts = require("express-ejs-layouts");
 const mongoose = require("mongoose");
 
+const pathConfig = require("./path");
+
 //Define Path
 global.__base = __dirname + "/";
-global.__path_app = __base + "App/";
-global.__path_configs = __path_app + "configs/";
-global.__path_helpers = __path_app + "helpers/";
-global.__path_routes = __path_app + "routes/";
-global.__path_schemas = __path_app + "schemas/";
-global.__path_validates = __path_app + "validates/";
-global.__path_views = __path_app + "views/";
+global.__path_app = __base + pathConfig.folder_app + "/";
+global.__path_configs = __path_app + pathConfig.folder_configs + "/";
+global.__path_helpers = __path_app + pathConfig.folder_helpers + "/";
+global.__path_routes = __path_app + pathConfig.folder_routes + "/";
+global.__path_schemas = __path_app + pathConfig.folder_schemas + "/";
+global.__path_validates = __path_app + pathConfig.folder_validates + "/";
+global.__path_views = __path_app + pathConfig.folder_views + "/";
 
 console.log("__path_configs: " + __path_configs);
 
